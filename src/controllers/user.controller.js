@@ -9,10 +9,7 @@ async function addUser(req,res){
     if (!email || email.trim() === ""){
         return res.status(400).json({message:"Digite um email valido"})
     }
-    const emailExist = UserModel.findOne({email: email})
-    if(emailExist){
-        return res.status(400).json({message:"Email ja cadastrado"})
-    }
+    
     if (!password || password.trim() === ""){
         return res.status(400).json({message:"Digite uma senha valida"})
     }
