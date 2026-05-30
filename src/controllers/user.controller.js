@@ -31,7 +31,18 @@ async function addUser(req,res){
         res.status(500).json({message: "Erro interno"})
     }
 }
-
+async function login(req, res){
+    const {email, password} = req.body
+    const usuario = await UserModel.findOne({email: email})
+    if (!usuario){
+        return res.status(404).json({message: "Usuario não encontrado"})
+    }
+    passwordConfirm = await bcrypt.compare(password, usuario.password)
+    if(passwordConfirm){
+        return res.status(200).json({message: "Login realiziado com sucesso"})
+    }
+    return res.status(401).json({message: "Senha invalida"})
+}
 module.exports = {
-    addUser
+    addUser, login
 }
