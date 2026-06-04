@@ -36,6 +36,12 @@ async function addUser(req, res) {
 }
 async function login(req, res) {
   const { email, password } = req.body;
+  if (!email || email.trim() === "") {
+    return res.status(400).json({ message: "Digite um email valido" });
+  }
+  if (!password || password.trim() === "") {
+    return res.status(400).json({ message: "Digite uma senha valida" });
+  }
   const user = await UserModel.findOne({ email: email });
   if (!user) {
     return res.status(401).json({ message: "Email ou senha invalidos" });
@@ -44,17 +50,22 @@ async function login(req, res) {
   if (!passwordConfirm) {
     return res.status(401).json({ message: "Email ou senha invalidos" });
   }
-  const token = jwt.sign(
-    {
-      id: user.id,
-      role: user.role,
-    },
-    process.env.SECRET,
-    {
-      expiresIn: 60,
-    },
-  );
-  res.status(200).json({token: token})
+  try {
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role,
+      },
+      process.env.SECRET,
+      {
+        expiresIn: 60,
+      },
+    );
+    res.status(200).json({ token: token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Erro interno" });
+  }
 }
 module.exports = {
   addUser,
