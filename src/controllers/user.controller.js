@@ -91,8 +91,53 @@ async function infoUsuario(req, res) {
     res.status(404).json({ message: "Usuario não encontrado" });
   }
 }
+async function alterarUsuario(req, res) {
+  const id = req.userId;
+  const { name, email, password } = req.body;
+  const newUser = {};
+  if (name || !name.trim() === "") {
+    newUser.username = name;
+  }
+  if (email || !email.trim() === "") {
+    newUser.email = email;
+  }
+  const emailExist = await UserModel.findOne({ email: email });
+  if (emailExist) {
+    return res.status(400).json({ message: "Email ja cadastrado" });
+  }
+  if (password || !password.trim() === "") {
+    const passwordHash = await bcrypt.hash(password, 12);
+    newUser.password = passwordHash;
+  }
+  try {
+    const user = await UserModel.findByIdAndUpdate(id, newUser, {
+      runValidators: true,
+      returnDocument: "after",
+    });
+
+    res.status(200).json({ message: "Usuario alterado com sucesso" });
+  } catch (error) {
+    res.status(500).json({ message: "Erro interno" });
+  }
+}
+
+async function autoDelete(req, res) {
+  const id = req.userId;
+  try {
+    const user = await UserModel.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario não encontrado" });
+    }
+    res.status(200).json({ message: "Usuario deletado com sucesso" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Erro interno" });
+  }
+}
 module.exports = {
   addUser,
   login,
-  infoUsuario
+  infoUsuario,
+  alterarUsuario,
+  autoDelete
 };
