@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/UserModel");
 const jwt = require("jsonwebtoken");
+const User = require("../models/UserModel");
 
 async function addUser(req, res) {
   const { name, email, password, confirmPassword } = req.body;
@@ -32,7 +33,17 @@ async function addUser(req, res) {
       email,
       password: passwordHash,
     });
-    res.status(201).json({ message: "Usuario cadastrado com sucesso" });
+    const token = jwt.sign(
+      {
+        id: user._id,
+        role: user.role,
+      },
+      process.env.SECRET,
+      {
+        expiresIn: "7d",
+      },
+    );
+    res.status(201).json({ token: token });
   } catch (error) {
     res.status(500).json({ message: "Erro interno" });
   }
@@ -56,7 +67,7 @@ async function login(req, res) {
   try {
     const token = jwt.sign(
       {
-        id: user.id,
+        id: user._id,
         role: user.role,
       },
       process.env.SECRET,
@@ -71,10 +82,15 @@ async function login(req, res) {
   }
 }
 async function infoUsuario(req, res) {
+  try {
     const id = req.userId;
     const user = await UserModel.findById(id).select("-password");
     res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: "Usuario não encontrado" });
   }
+}
 module.exports = {
   addUser,
   login,
