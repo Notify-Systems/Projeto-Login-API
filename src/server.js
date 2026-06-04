@@ -6,9 +6,11 @@ const dotenv = require("dotenv")
 dotenv.config()
 startDB()
 const userRoute = require("./routes/user.route")
+const admRoute = require("./routes/adm.route")
 
 app.use(cors())
 app.use(express.json())
-app.use(userRoute)
+app.use("/usuario", userRoute)
+app.use("/adm", admRoute)
 
 app.listen("8080", ()=> console.log("Sevidor rodando"))

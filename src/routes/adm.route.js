@@ -7,3 +7,5 @@ const permission = require("../middleware/perm.middleware");
 router.get("/users", auth, permission, mostrarUsuarios);
 
 router.delete("/user", auth, permission, mostrarUsuarios);
+
+module.exports = router

@@ -33,17 +33,7 @@ async function addUser(req, res) {
       email,
       password: passwordHash,
     });
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role,
-      },
-      process.env.SECRET,
-      {
-        expiresIn: "7d",
-      },
-    );
-    res.status(201).json({ token: token });
+    res.status(201).json({message: "Usuario criado com sucesso"});
   } catch (error) {
     res.status(500).json({ message: "Erro interno" });
   }
@@ -60,7 +50,7 @@ async function login(req, res) {
   if (!user) {
     return res.status(401).json({ message: "Email ou senha invalidos" });
   }
-  passwordConfirm = await bcrypt.compare(password, user.password);
+  const passwordConfirm = await bcrypt.compare(password, user.password);
   if (!passwordConfirm) {
     return res.status(401).json({ message: "Email ou senha invalidos" });
   }
@@ -95,17 +85,17 @@ async function alterarUsuario(req, res) {
   const id = req.userId;
   const { name, email, password } = req.body;
   const newUser = {};
-  if (name || !name.trim() === "") {
+  if (name && name.trim() !== "") {
     newUser.username = name;
   }
-  if (email || !email.trim() === "") {
+  if (email && email.trim() !== "") {
     newUser.email = email;
   }
   const emailExist = await UserModel.findOne({ email: email });
   if (emailExist) {
     return res.status(400).json({ message: "Email ja cadastrado" });
   }
-  if (password || !password.trim() === "") {
+  if (password && password.trim() !== "") {
     const passwordHash = await bcrypt.hash(password, 12);
     newUser.password = passwordHash;
   }
