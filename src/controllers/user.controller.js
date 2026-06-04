@@ -10,7 +10,10 @@ async function addUser(req, res) {
   if (!email || email.trim() === "") {
     return res.status(400).json({ message: "Digite um email valido" });
   }
-
+  const emailExist = await User.findOne({ email: email });
+  if (emailExist) {
+    return res.status(400).json({ message: "Email ja cadastrado" });
+  }
   if (!password || password.trim() === "") {
     return res.status(400).json({ message: "Digite uma senha valida" });
   }
@@ -46,7 +49,7 @@ async function login(req, res) {
   if (!user) {
     return res.status(401).json({ message: "Email ou senha invalidos" });
   }
-  passwordConfirm = await bcrypt.compare(password, usuario.password);
+  passwordConfirm = await bcrypt.compare(password, user.password);
   if (!passwordConfirm) {
     return res.status(401).json({ message: "Email ou senha invalidos" });
   }
@@ -58,7 +61,7 @@ async function login(req, res) {
       },
       process.env.SECRET,
       {
-        expiresIn: 60,
+        expiresIn: "7d",
       },
     );
     res.status(200).json({ token: token });
@@ -67,7 +70,13 @@ async function login(req, res) {
     res.status(500).json({ message: "Erro interno" });
   }
 }
+async function infoUsuario(req, res) {
+    const id = req.userId;
+    const user = await UserModel.findById(id).select("-password");
+    res.status(200).json(user);
+  }
 module.exports = {
   addUser,
   login,
+  infoUsuario
 };
