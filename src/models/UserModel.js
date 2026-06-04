@@ -23,6 +23,10 @@ const UserSchema = new Schema({
     theme:{
         type: String,
         default: "auto"
+    },
+    role:{
+        type: String,
+        default: "user"
     }
 })
 const User = mongoose.model("User", UserSchema)
