@@ -27,6 +27,9 @@ const UserSchema = new Schema({
     role:{
         type: String,
         default: "user"
+    },
+    refreshToken:{
+        type: String
     }
 })
 const User = mongoose.model("User", UserSchema)
