@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {mostrarUsuarios,deleteUsuario} = require("../controllers/adm.controller");
+const controller = require("../controllers/adm.controller");
 const auth = require("../middleware/auth.middleware");
 const permission = require("../middleware/perm.middleware");
 
