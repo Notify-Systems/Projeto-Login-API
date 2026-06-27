@@ -15,4 +15,6 @@ router.delete("/", auth , controller.delete)
 
 router.get("/refresh", controller.refresh)
 
+router.put("/setTheme", auth, controller.setTheme)
+
 module.exports = router;

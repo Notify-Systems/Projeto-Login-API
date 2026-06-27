@@ -196,5 +196,20 @@ class userController {
       return res.status(401).json({ message: "Token invalido" });
     }
   }
+  async setTheme(req, res){
+    const id = req.userId
+    const user = User.findById(id)
+    if(!user) return res.status(404).json({message: "Usuario não encontrado"})
+    const {theme} = req.body
+  try{
+    if(theme === "auto" || theme === "dark" || theme === "light" && theme !== user.theme){
+      await User.findByIdAndUpdate(id, {theme: theme})
+      return res.status(200).json({message: "Theme trocada com sucesso", theme: theme})
+    }
+    res.status(400).json({message: "Theme invalida"})
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message: "Erro interno"})
+  }}
 }
 module.exports = new userController();
